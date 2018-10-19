@@ -30,7 +30,7 @@ def make_kpca_feats():
     id_dict = make_combis(target_ids, random_ids, cited_ids, dupl_ids)
  
     # load corpus
-    pat_corpus = np.load('../corpus/corpus_abstract.npy').item()
+    pat_corpus = np.load('../corpus/corpus.npy').item()
     # extract features
     ft = FeatureTransform(renorm='max')
     docfeats = ft.texts2features(pat_corpus)
@@ -75,8 +75,10 @@ def apply_kpca_rel_corpus():
         human_scores = calc_simcoef_distr(patfeats_lsa, ['irrelevant', 'relevant'],
                                           {'relevant': human_sim_combis, 'irrelevant': human_diff_combis},
                                           simcoef)
-        binary_auc = calc_auc(binary_scores['cited'], binary_scores['random'])[2]
-        human_auc = calc_auc(human_scores['relevant'], human_scores['irrelevant'])[2]
+        binary_auc, binary_aps = calc_auc(binary_scores['cited'], binary_scores['random'])[2::]
+        human_auc, human_aps = calc_auc(human_scores['relevant'], human_scores['irrelevant'])[2::]
+        print(binary_aps, human_aps)
+        print(binary_auc, human_auc)
         plot_score_distr('human_eval', simcoef, ['random', 'cited'], 
                          {'cited': binary_scores['cited'], 'random': binary_scores['random']},
                          binary_auc, ['cited'], histdir='kpca_1000_rel_corp', bins=20)
@@ -87,13 +89,13 @@ def apply_kpca_rel_corpus():
 
 
 if __name__ == "__main__":
-    apply_kpca_rel_corpus()
-    '''
+    #apply_kpca_rel_corpus()
+
     #train_feats, target_feats = make_kpca_feats()
-    target_ids = np.load('../corpus/target_ids.npy')
-    random_ids = np.load('../corpus/random_ids.npy')
-    dupl_ids = np.load('../corpus/dupl_ids.npy').item()
-    cited_ids = np.load('../corpus/cited_ids.npy').item()
+    target_ids = np.load('corpus/target_ids.npy')
+    random_ids = np.load('corpus/random_ids.npy')
+    dupl_ids = np.load('corpus/dupl_ids.npy').item()
+    cited_ids = np.load('corpus/cited_ids.npy').item()
 
     id_dict = make_combis(target_ids, random_ids, cited_ids, dupl_ids)
     train_feats = np.load('human_eval/corpus_info/train_feats_claims.npy').item()
@@ -115,9 +117,9 @@ if __name__ == "__main__":
         np.save('human_eval/corpus_info/kpca_feats.npy', kpca_feats)
         scores = calc_simcoef_distr(kpca_feats, ['cited', 'duplicate', 'random'], 
                                                   id_dict, 'linear')
-        auc = calc_auc(scores['cited'], scores['random'])[2]
-
+        auc, aps = calc_auc(scores['cited'], scores['random'])[2::]
+        print(auc, aps)
         plot_score_distr('human_eval', 'linear', ['random', 'cited', 'duplicate'], 
                         {'cited': scores['cited'], 'random': scores['random'], 'duplicate': scores['duplicate']},
                                  auc, ['cited'], histdir='kpca_%i' %n_comp, bins=50)
-    '''
+

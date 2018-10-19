@@ -1,6 +1,7 @@
 import numpy as np
-import cPickle as pkl
+#import cPickle as pkl
 from sklearn.decomposition import TruncatedSVD
+from sklearn.metrics import average_precision_score
 from nlputils.features import FeatureTransform, features2mat
 from nlputils.dict_utils import norm_dict
 from plot_utils import plot_score_distr, calc_simcoef_distr, group_combis, calc_auc, make_combis
@@ -77,6 +78,10 @@ def apply_lsa_rel_corpus():
                                           simcoef)
         binary_auc = calc_auc(binary_scores['cited'], binary_scores['random'])[2]
         human_auc = calc_auc(human_scores['relevant'], human_scores['irrelevant'])[2]
+        binary_aps = calc_auc(binary_scores['cited'], binary_scores['random'])[3]
+        human_aps = calc_auc(human_scores['relevant'], human_scores['irrelevant'])[3]
+        print(binary_aps, human_aps)
+        print(binary_auc, human_auc)
         plot_score_distr('human_eval', simcoef, ['random', 'cited'], 
                          {'cited': binary_scores['cited'], 'random': binary_scores['random']},
                          binary_auc, ['cited'], histdir='lsa_full250_rel_corp', bins=20)

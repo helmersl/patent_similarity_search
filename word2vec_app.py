@@ -3,7 +3,7 @@ import word2vec
 import logging
 import numpy as np
 import cPickle as pkl
-from corpus_utils import PatentCorpus
+from corpus_utils import PatentCorpus, make_w2v_corpus
 from plot_utils import plot_score_distr, calc_simcoef_distr, group_combis, calc_auc
 from nlputils.preprocessing import features2mat
 from nlputils.simcoefs import compute_sim
@@ -49,11 +49,11 @@ def embed_features(model, patfeats, pat_ids):
 
 if __name__ == "__main__":
     # load text
-    sentences = PatentCorpus()
-    sentences.mode = 'w2v'
-    #train_word2vec(sentences)
+    sentences = make_w2v_corpus()
+    #sentences.mode = 'w2v'
+    train_word2vec(sentences)
     #load model
-    model = pkl.load(open('human_eval/models/full_patent_corpus_sg_200_hs0_neg13_seed1.model'))
+    model = pkl.load(open('human_eval/models/patents_sg_200_hs0_neg13_seed1.model'))
     # load patfeats and ids saved while performing regression
     pat_ids = np.load('human_eval/corpus_info/pat_ids.npy')
     patfeats = np.load('human_eval/corpus_info/patfeats_human_eval.npy').item()
@@ -80,7 +80,10 @@ if __name__ == "__main__":
                                           simcoef)
         binary_auc = calc_auc(binary_scores['cited'], binary_scores['random'])[2]
         human_auc = calc_auc(human_scores['relevant'], human_scores['irrelevant'])[2]
-        
+        binary_aps = calc_auc(binary_scores['cited'], binary_scores['random'])[3]
+        human_aps = calc_auc(human_scores['relevant'], human_scores['irrelevant'])[3]
+        print(binary_aps, human_aps)
+        print(binary_auc, human_auc)
         plot_score_distr('human_eval', simcoef, ['random', 'cited'], 
                          {'cited': binary_scores['cited'], 'random': binary_scores['random']},
                          binary_auc, ['cited'], histdir='w2v_sg_200', bins=10)

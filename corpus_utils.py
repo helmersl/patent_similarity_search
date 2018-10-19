@@ -9,13 +9,13 @@ from database.make_patent_db import load_session, Patent
 session = load_session()
 
 def make_d2v_corpus(target_ids):
-    corpus = np.load('../corpus/corpus.npy').item()
+    corpus = np.load('corpus/corpus.npy').item()
     train_corpus = [gensim.models.doc2vec.TaggedDocument(pat.lower().split(), [pid]) for pid, pat in corpus.items() if pid not in target_ids]
     target_corpus = {pid: corpus[pid].lower().split() for pid in target_ids}
     return train_corpus, target_corpus
 
 def make_w2v_corpus():
-    corpus = np.load('../corpus/corpus.npy').item()
+    corpus = np.load('corpus/corpus.npy').item()
     return [pat.lower().split() for pat in corpus.values()]
 
 class PatentCorpus(object):
