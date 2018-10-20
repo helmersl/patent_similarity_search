@@ -3,8 +3,9 @@ import word2vec
 import logging
 import numpy as np
 import cPickle as pkl
+import gensim
 from corpus_utils import PatentCorpus, make_w2v_corpus
-from plot_utils import plot_score_distr, calc_simcoef_distr, group_combis, calc_auc
+#from plot_utils import plot_score_distr, calc_simcoef_distr, group_combis, calc_auc
 from nlputils.preprocessing import features2mat
 from nlputils.simcoefs import compute_sim
 from sklearn.preprocessing import normalize
@@ -22,7 +23,7 @@ def train_word2vec(pat_corpus, corpus='patents', seed=1, embed_dim=300):
     print "saving model"
     pkl.dump(model, open("human_eval/models/%s"%saven,'wb'), -1)
     return model
-    
+
 def embed_features(model, patfeats, pat_ids):
     """
     Combine BOW-features with word2vec embedding
@@ -30,7 +31,7 @@ def embed_features(model, patfeats, pat_ids):
     Input:
         - model: name of the previously trained w2v model
             where: row 10 of model contains word x --> x = model.index2word[10]
-                   row i contains embedding for word x --> i = model.vocab[x].index 
+                   row i contains embedding for word x --> i = model.vocab[x].index
         - patfeats: BOW-features calculated during regression
         - pat_ids: IDs of the patents in the corpus
 
@@ -51,9 +52,16 @@ if __name__ == "__main__":
     # load text
     sentences = make_w2v_corpus()
     #sentences.mode = 'w2v'
-    train_word2vec(sentences)
+    #train_word2vec(sentences, 'all_patents')
     #load model
-    model = pkl.load(open('human_eval/models/patents_sg_200_hs0_neg13_seed1.model'))
+    model = gensim.models.Word2Vec(
+        sentences,
+        size=300,
+        window=10,
+        min_count=1)
+    model.train(sentences, total_examples=len(sentences), epochs=10)
+    pkl.dump(model, open("human_eval/models/patents_all_sg_200_hs0_neg13_seed1.model",'wb'), -1)
+    #model = pkl.load(open('human_eval/models/patents_sg_200_hs0_neg13_seed1.model'))
     # load patfeats and ids saved while performing regression
     pat_ids = np.load('human_eval/corpus_info/pat_ids.npy')
     patfeats = np.load('human_eval/corpus_info/patfeats_human_eval.npy').item()
@@ -72,7 +80,7 @@ if __name__ == "__main__":
     binary_sim_combis, binary_diff_combis = group_combis(binary_label_pairs)
     human_sim_combis, human_diff_combis = group_combis(human_label_pairs)
     for simcoef in ['linear', 'jaccard']:
-        binary_scores = calc_simcoef_distr(patfeats_w2v, ['random', 'cited'], 
+        binary_scores = calc_simcoef_distr(patfeats_w2v, ['random', 'cited'],
                                            {'cited': binary_sim_combis, 'random': binary_diff_combis},
                                            simcoef)
         human_scores = calc_simcoef_distr(patfeats_w2v, ['irrelevant', 'relevant'],
@@ -84,11 +92,10 @@ if __name__ == "__main__":
         human_aps = calc_auc(human_scores['relevant'], human_scores['irrelevant'])[3]
         print(binary_aps, human_aps)
         print(binary_auc, human_auc)
-        plot_score_distr('human_eval', simcoef, ['random', 'cited'], 
+        plot_score_distr('human_eval', simcoef, ['random', 'cited'],
                          {'cited': binary_scores['cited'], 'random': binary_scores['random']},
                          binary_auc, ['cited'], histdir='w2v_sg_200', bins=10)
 
-        plot_score_distr('human_eval', simcoef, ['irrelevant', 'relevant'], 
+        plot_score_distr('human_eval', simcoef, ['irrelevant', 'relevant'],
                  {'relevant': human_scores['relevant'], 'irrelevant': human_scores['irrelevant']},
                  human_auc, ['relevant'], histdir='w2v_sg_200', bins=10)
-        
