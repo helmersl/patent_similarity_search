@@ -3,6 +3,13 @@ This repository contains research work on finding prior art for a given patent.
 The approach is to find the most similar documents for a given patent application
 by comparing them using similarity measures calculated on the documents' full texts.
 
+All the data sets needed for reproducing the analyses are available at:
+`https://figshare.com` and can be downloaded in a compressed format after sign-up
+
+* SQLite database-file: `https://figshare.com/articles/Patent_Database/7264733`
+* Patent scoring by expert and corpus subsample: `https://figshare.com/articles/human_eval_tar_gz/7257215`
+* Entire corpus: `https://figshare.com/articles/corpus_tar_gz/7257194`
+
 ## Compile dataset and load it into sqlite database
 ### Crawling patent files from google patents
  * Adapt the seed patents in the main functions in patentcollector.py
