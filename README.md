@@ -1,7 +1,21 @@
 # Finding a patent's prior art using text similarity
 This repository contains research work on finding prior art for a given patent.
 The approach is to find the most similar documents for a given patent application
-by comparing them using similarity measures calculated on the documents' full texts.
+by comparing them using similarity measures calculated on the documents' full texts. 
+For further details on the experiments please refer to the [paper](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0212103):
+
+```
+@article{helmers2019automating,
+  title={Automating the search for a patent's prior art with a full text similarity search},
+  author={Helmers, Lea and Horn, Franziska and Biegler, Franziska and Oppermann, Tim and M{\"u}ller, Klaus-Robert},
+  journal={{PLoS ONE}},
+  volume={14},
+  number={3},
+  pages={e0212103},
+  year={2019},
+  publisher={Public Library of Science}
+}
+```
 
 All the data sets needed for reproducing the analyses are available at:
 `https://figshare.com` and can be downloaded in a compressed format after sign-up
