@@ -65,3 +65,6 @@ python word2vec_app.py
 ```
 python doc2vec.py
 ```
+
+##### LICENSE
+You are free to use the content of this repository under the terms of the Creative Commons Attribution License (http://creativecommons.org/licenses/by/4.0), which permits unrestricted use, distribution, and reproduction in any medium, provided the original work is properly cited. 
